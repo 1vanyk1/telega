@@ -3,9 +3,6 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 import requests
 reply_keyboard = [['/lang ru en', '/lang en ru']]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
-REQUEST_KWARGS = {'proxy_url': 'socks5://173.245.239.12:17145',
-                  'urllib3_proxy_kwargs': {'assert_hostname': 'False',
-                                           'cert_reqs': 'CERT_NONE'} }
 
 
 def echo(update, context, user_data):
@@ -43,7 +40,7 @@ def translate(update, context, user_data):
 
 
 def main():
-    updater = Updater('1022899407:AAGUFsXx6G4srC2T2mwvajLQHuQeJnJG5mU', use_context=True, request_kwargs=REQUEST_KWARGS)
+    updater = Updater('1022899407:AAGUFsXx6G4srC2T2mwvajLQHuQeJnJG5mU', use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("lang", change_language))
     conv_handler = ConversationHandler(entry_points=[CommandHandler('start', start,
