@@ -1,8 +1,6 @@
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, CommandHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
-import json
 import requests
-import copy
 reply_keyboard = [['/lang ru en', '/lang en ru']]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 REQUEST_KWARGS = {'proxy_url': 'socks5://173.245.239.12:17145',
