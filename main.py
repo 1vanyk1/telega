@@ -20,13 +20,14 @@ def echo(update, context):
 
 
 def start(update, context):
-    update.message.reply_text("Добро пожаловать! Пожалуйста, сдайте верхнюю одежду в гардероб!",
-                              reply_markup=markup1)
+    update.message.reply_text("Добро пожаловать! Пожалуйста, сдайте верхнюю одежду в гардероб!")
+    update.message.reply_text(rooms_info[0], reply_markup=rooms_markups[0])
     return 1
 
 
 def stop(update, context):
-    update.message.reply_text("Всего доброго, не забудьте забрать верхнюю одежду в гардеробе!")
+    update.message.reply_text("Всего доброго, не забудьте забрать верхнюю одежду в гардеробе!",
+                              reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
