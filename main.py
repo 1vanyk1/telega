@@ -1,5 +1,6 @@
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, CommandHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+import requests
 reply_keyboard = [['/lang ru en', '/lang en ru']]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 REQUEST_KWARGS = {'proxy_url': 'socks5://173.245.239.12:17145',
@@ -36,7 +37,7 @@ def translate(update, context, user_data):
 
 
 def main():
-    updater = Updater(TOKEN, use_context=True, request_kwargs=REQUEST_KWARGS)
+    updater = Updater('1022899407:AAGUFsXx6G4srC2T2mwvajLQHuQeJnJG5mU', use_context=True, request_kwargs=REQUEST_KWARGS)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("lang", change_language, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.text, translate, pass_user_data=True))
