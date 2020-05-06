@@ -8,7 +8,7 @@ markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 #                                            'cert_reqs': 'CERT_NONE'} }
 
 
-def change_language(update, context, user_data):
+def change_language(update, context):
     context.user_data['lang'] = f'{context.args[0]}-{context.args[1]}'
     update.message.reply_text([context.user_data['lang']], reply_markup=markup)
 
