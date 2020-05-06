@@ -36,7 +36,7 @@ def main():
     updater = Updater('1022899407:AAGUFsXx6G4srC2T2mwvajLQHuQeJnJG5mU', use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("lang", change_language, pass_user_data=True))
-    dp.add_handler(MessageHandler(Filters.text, translate))
+    dp.add_handler(MessageHandler(Filters.text, translate, pass_user_data=True))
     updater.start_polling()
     updater.idle()
 
