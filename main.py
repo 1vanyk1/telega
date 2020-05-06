@@ -10,6 +10,7 @@ markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
 def change_language(update, context, user_data):
     context.user_data['lang'] = f'{context.args[0]}-{context.args[1]}'
+    update.message.reply_text([context.user_data['lang']], reply_markup=markup)
 
 
 def translate(update, context):
@@ -26,8 +27,8 @@ def translate(update, context):
         "text": update.message.text, "lang": context.user_data["lang"]}
     request = requests.get(api_server, params=params)
     try:
-        text = str(request.json()['text'])
-        update.message.reply_text(text, reply_markup=markup)
+        text = str(request.json()['text'][0])
+        update.message.reply_text(text + '||||' + str(context.user_data), reply_markup=markup)
     except BaseException:
         update.message.reply_text('Не удалось перевести: ' + update.message.text, reply_markup=markup)
 
