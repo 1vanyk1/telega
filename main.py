@@ -16,6 +16,7 @@ def change_language(update, context, user_data):
 def translate(update, context):
     try:
         if context.user_data['lang'] not in ['ru-en', 'en-ru']:
+            return update.message.reply_text(str(context.user_data), reply_markup=markup)
             context.user_data['lang'] = 'ru-en'
     except BaseException:
           context.user_data['lang'] = 'ru-en'
@@ -28,7 +29,7 @@ def translate(update, context):
     request = requests.get(api_server, params=params)
     try:
         text = str(request.json()['text'][0])
-        update.message.reply_text(text + '||||' + str(context.user_data), reply_markup=markup)
+        update.message.reply_text(text, reply_markup=markup)
     except BaseException:
         update.message.reply_text('Не удалось перевести: ' + update.message.text, reply_markup=markup)
 
