@@ -37,7 +37,7 @@ def geocoder(update, context):
 def main():
     updater = Updater('1022899407:AAGUFsXx6G4srC2T2mwvajLQHuQeJnJG5mU', use_context=True)
     dp = updater.dispatcher
-    text_handler = MessageHandler(Filters.text, geocoder, pass_user_data=True)
+    text_handler = MessageHandler(Filters.text, geocoder)
     dp.add_handler(text_handler)
     updater.start_polling()
     updater.idle()
