@@ -1,46 +1,50 @@
-from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, CommandHandler, ConversationHandler
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import Updater, MessageHandler, Filters
 import requests
-reply_keyboard = [['/lang ru en', '/lang en ru']]
-markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 REQUEST_KWARGS = {'proxy_url': 'socks5://173.245.239.12:17145',
                   'urllib3_proxy_kwargs': {'assert_hostname': 'False',
-                                           'cert_reqs': 'CERT_NONE'} }
+                                           'cert_reqs': 'CERT_NONE'}}
+
+
+def get_ll_spn(toponym):
+    try:
+        toponym_coodrinates = ','.join(toponym["Point"]["pos"].split())
+    except:
+        return ['Ошибка в определении положения']
+    try:
+        corners = [list(map(float, i.split())) for i in toponym['boundedBy']['Envelope'].values()]
+        corners = ','.join([str(corners[1][0] - corners[0][0]), str(corners[1][1] - corners[0][1])])
+    except:
+        return ['Ошибка в определении размера']
+    return [toponym_coodrinates, corners]
 
 
 def echo(update, context, user_data):
     update.message.reply_text(f"Я получил сообщение {update.message.text}")
 
 
-def change_language(update, context, user_data):
-    context.user_data['lang'] = f'{context.args[0]}-{context.args[1]}'
-
-
-def translate(update, context, user_data):
-    try:
-        if context.user_data['lang'] not in ['ru-en', 'en-ru']:
-            context.user_data['lang'] = 'ru-en'
-    except BaseException:
-          context.user_data['lang'] = 'ru-en'
-    context.user_data['locality'] = update.message.text
-    api_server = "https://translate.yandex.net/api/v1.5/tr.json/translate"
-    params = {
-        "key":
-            'trnsl.1.1.20200325T150356Z.9f78a6ddcc4f1fc4.dc324d7ca5564e2f768570df2a4a51690c20377d',
-        "text": update.message.text, "lang": context.user_data["lang"]}
-    request = requests.get(api_server, params=params)
-    try:
-        text = str(request.json()['text'])
-        update.message.reply_text(text)
-    except BaseException:
-        update.message.reply_text('Не удалось перевести: ' + update.message.text)
+def geocoder(update, context, user_data):
+    geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
+    response = requests.get(geocoder_uri, params={
+        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "format": "json",
+        "geocode": update.message.text})
+    toponym_json = response.json()["response"]["GeoObjectCollection"]["featureMember"]
+    if len(toponym_json):
+        update.message.reply_text(f"К сожалению не удалось найти {update.message.text}")
+    toponym = toponym_json[0]["GeoObject"]
+    res = get_ll_spn(toponym)
+    if len(res) == 1:
+        update.message.reply_text(f"{res[0]} {update.message.text}")
+        return
+    ll, spn = res[0], res[1]
+    static_api_request = f"http://static-maps.yandex.ru/1.x/?ll={ll}&spn={spn}&l=map&pt={ll},org"
+    context.bot.send_photo(update.message.chat_id, static_api_request, caption=update.message.text)
 
 
 def main():
     updater = Updater('1022899407:AAGUFsXx6G4srC2T2mwvajLQHuQeJnJG5mU', use_context=True)
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler("lang", change_language, pass_user_data=True))
-    dp.add_handler(MessageHandler(Filters.text, translate, pass_user_data=True))
+    dp.add_handler(MessageHandler(Filters.text, geocoder, pass_user_data=True))
     updater.start_polling()
     updater.idle()
 
